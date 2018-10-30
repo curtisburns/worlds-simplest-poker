@@ -11,6 +11,10 @@ const deck = [];
 const suits = ['Hearts', 'Spades', 'Diamonds', 'Clubs'];
 const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
+// Initialised at 2 players
+const handSizeOptions = [];
+const playerNumberOptions = [1, 2];
+
 // This class builds the deck, dealt and totalled are intialised as false to be
 // used later
 class Card {
@@ -48,9 +52,41 @@ function shuffleDeck() {
 
 shuffleDeck();
 
+// Choose number of players
+function choosePlayers({target: { innerHTML }}) {
+  console.log(innerHTML);
+}
 
+// How many cards dealt needs to be determined by number of players and vice
+// versa
+
+
+function calculateSizeOfHand() {
+  const maxNumberOfPlayers = Math.max(...playerNumberOptions);
+  const maxHandSize = deck.length/maxNumberOfPlayers;
+  // Determines hand size options
+  for ( let i = 1; i <= maxHandSize; i++ ) {
+    handSizeOptions.push(i);
+  }
+}
+
+calculateSizeOfHand();
+
+function calculateNumberOfPlayers() {
+  const maxHandSize = Math.max(...handSizeOptions);
+  const maxNumberOfPlayers = deck.length/maxHandSize;
+  for ( let i = 1; i <= maxHandSize; i++ ) {
+    playerNumberOptions.push(i);
+  }
+  console.log(maxNumberOfPlayers);
+}
+
+calculateNumberOfPlayers();
 
 window.onload = () => {
+  const choosePlayersButtons = document.getElementsByClassName('choosePlayers');
 
-
+  for (let i = 0; i < choosePlayersButtons.length; i++) {
+    choosePlayersButtons[i].addEventListener('click', choosePlayers);
+  }
 };
