@@ -1,0 +1,7 @@
+span {
+  display: inline-block;
+}
+
+.option-1 img, .option-2 img {
+    width: 10px;
+}
