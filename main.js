@@ -22,9 +22,10 @@ window.onload = () => {
 
 
   // Initialised at 2 players
-  const handSizeOptions = [];
-  const playerNumberOptions = [1, 2];
+  let handSizeOptions = [];
+  let playerNumberOptions = [1, 2];
   const currentPlayerChoice = {number: playerNumberOptions[1]};
+  const currentHandSizeChoice = {number: 6};
 
   // This class builds the deck, dealt and totalled are intialised as false to be
   // used later
@@ -44,14 +45,12 @@ window.onload = () => {
     }
   }
 
-  // initialise deck
+  // Initialise deck
 
   shuffleDeck();
   calculateSizeOfHand();
   calculateNumberOfPlayers();
-  console.log(handSizeOptions);
-  const currentHandSizeChoice = {number: handSizeOptions[5]};
-
+  updateDOMOptions();
 
   //This constructs a deck when a game starts
   function constructDeck() {
@@ -80,57 +79,97 @@ window.onload = () => {
   // How many cards dealt needs to be determined by number of players and vice
   // versa
   function calculateSizeOfHand() {
-    const maxNumberOfPlayers = Math.max(...playerNumberOptions);
-    const maxHandSize = deck.length/maxNumberOfPlayers;
+    handSizeOptions = [];
+    const maxHandSize = Math.floor(deck.length/currentPlayerChoice.number);
     // Determines hand size options
     for ( let i = 1; i <= maxHandSize; i++ ) {
-      handSizeOptions.push(i);
+      handSizeOptions[i-1] = i;
     }
   }
-
-
 
   function calculateNumberOfPlayers() {
-    const maxHandSize = Math.max(...handSizeOptions);
-    const maxNumberOfPlayers = deck.length/maxHandSize;
+    playerNumberOptions = [];
+    const maxNumberOfPlayers = Math.floor(deck.length/currentHandSizeChoice.number);
     // Determines player number options
     for ( let i = 1; i <= maxNumberOfPlayers; i++ ) {
-      playerNumberOptions.push(i);
+      playerNumberOptions[i-1] = i;
     }
   }
 
-  numberOfPlayersDOM.textContent = currentPlayerChoice.number;
-  sizeOfHandDOM.textContent = currentHandSizeChoice.number;
-  upArrow1.addEventListener('click', assignArrowFunction(currentPlayerChoice, playerNumberOptions, 'up'));
-  downArrow1.addEventListener('click', assignArrowFunction(currentPlayerChoice, playerNumberOptions, 'down'));
-  upArrow2.addEventListener('click', assignArrowFunction(currentHandSizeChoice, handSizeOptions, 'up'));
-  downArrow2.addEventListener('click', assignArrowFunction(currentHandSizeChoice, handSizeOptions, 'down'));
+  function updateDOMOptions() {
+    numberOfPlayersDOM.textContent = currentPlayerChoice.number;
+    sizeOfHandDOM.textContent = currentHandSizeChoice.number;
+  }
 
 
 
 
-  // this needs to be a reusable function to cycle through options;
-  function assignArrowFunction(currentVal, option, direction) {
+  upArrow1.addEventListener('click', assignPlayerNumberSelect('up'));
+  downArrow1.addEventListener('click', assignPlayerNumberSelect('down'));
+  upArrow2.addEventListener('click', assignHandSizeSelect('up'));
+  downArrow2.addEventListener('click', assignHandSizeSelect('down'));
+
+  function assignPlayerNumberSelect(direction) {
     if (direction === 'up') {
-      return function increaseOption() {
-        const index = option.indexOf(currentVal.number) + 1;
+      return function increasePlayerNumber() {
+
+        calculateNumberOfPlayers();
+        calculateSizeOfHand();
+
+        const index = playerNumberOptions.indexOf(currentPlayerChoice.number) + 1;
         // If the index calculated is higher than possible, send to beginning.
         // Otherwise continue to increase;
-        currentVal.number = index > option.length-1 ? option[0] : option[index];
-        console.log('hey', currentVal);
+        currentPlayerChoice.number = index > playerNumberOptions.length-1 ? playerNumberOptions[0] : playerNumberOptions[index];
+
+        updateDOMOptions();
       };
     }
     if (direction === 'down') {
-      console.log('hoooo', option);
-      return function decreaseOption() {
-        const index = option.indexOf(currentVal.number) - 1;
+      return function decreasePlayerOption() {
+
+        calculateNumberOfPlayers();
+        calculateSizeOfHand();
+
+        const index = playerNumberOptions.indexOf(currentPlayerChoice.number) - 1;
         // If the index calculated is lower than possible, send to end.
         // Otherwise continue to decrease;
-        currentVal.number = index < 0 ? option[option.length-1] : option[index];
+        currentPlayerChoice.number = index < 0 ? playerNumberOptions[playerNumberOptions.length-1] : playerNumberOptions[index];
+
+        updateDOMOptions();
       };
     }
   }
 
+  function assignHandSizeSelect(direction) {
+    if (direction === 'up') {
+      return function increasePlayerNumber() {
+
+        calculateSizeOfHand();
+        calculateNumberOfPlayers();
+
+        const index = handSizeOptions.indexOf(currentHandSizeChoice.number) + 1;
+        // If the index calculated is higher than possible, send to beginning.
+        // Otherwise continue to increase;
+        currentHandSizeChoice.number = index > handSizeOptions.length-1 ? handSizeOptions[0] : handSizeOptions[index];
+
+        updateDOMOptions();
+      };
+    }
+    if (direction === 'down') {
+      return function decreasePlayerOption() {
+
+        calculateSizeOfHand();
+        calculateNumberOfPlayers();
+
+        const index = handSizeOptions.indexOf(currentHandSizeChoice.number) - 1;
+        // If the index calculated is lower than possible, send to end.
+        // Otherwise continue to decrease;
+        currentHandSizeChoice.number = index < 0 ? handSizeOptions[handSizeOptions.length-1] : handSizeOptions[index];
+
+        updateDOMOptions();
+      };
+    }
+  }
 
 
 };
