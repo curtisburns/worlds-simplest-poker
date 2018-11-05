@@ -1,7 +1,117 @@
-span {
+.options span {
+  display: block;
+  float: right;
+}
+
+.options {
+  box-sizing: border-box;
+  background: #F0F0F0;
+  position: absolute;
+  left: 0;
+  top: -300px;
+  width: 300px;
+  padding: 10px;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 1s;
+}
+
+.options .option-1 img, .options .option-2 img {
+    width: 10px;
+}
+
+.options .up-arrow-1 {
+  position: absolute;
+  top: 10px;
+  right: 9px;
+}
+
+.options .down-arrow-1 {
+  position: absolute;
+  right: 9px;
+  top: 50px;
+}
+
+.options .up-arrow-2 {
+  position: absolute;
+  right: 9px;
+  top: 65px;
+}
+
+.options .down-arrow-2 {
+  position: absolute;
+  right: 9px;
+  top: 110px;
+}
+
+.options p {
+  margin-bottom: 40px;
+}
+
+.options.show {
+  top: 0;
+}
+
+.scoreboard {
+  box-sizing: border-box;
+  background: #F0F0F0;
+  position: absolute;
+  right: 0;
+  top: -300px;
+  width: 300px;
+  padding: 10px;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 1s;
+}
+
+.scoreboard.show {
+  top: 0;
+}
+
+
+
+html, .game {
+  height: 100%;
+  width: 100%;
+  background: green;
+  font-family: sans-serif;
+}
+
+.startGame, .instructions {
+  background: white;
+  position: absolute;
+  top: 50%;
+  left: 300%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 170px;
+  text-align: center;
+  border-radius: 10px;
+  transition: all 1s;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
   display: inline-block;
 }
 
-.option-1 img, .option-2 img {
-    width: 10px;
+.startGame {
+  padding: 20px;
+}
+
+.instructions {
+  font-size: .8em;
+  padding: 10px
+}
+
+.startGame.modalEnter, .instructions.modalEnter {
+  left: 50%;
+}
+
+.startGame.modalLeave, .instructions.modalLeave  {
+  left: -50%;
 }
