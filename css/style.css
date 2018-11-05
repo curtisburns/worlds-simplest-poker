@@ -72,10 +72,11 @@
 
 
 html, .game {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   background: green;
   font-family: sans-serif;
+  overflow: hidden;
 }
 
 .startGame, .instructions {
@@ -114,4 +115,15 @@ html, .game {
 
 .startGame.modalLeave, .instructions.modalLeave  {
   left: -50%;
+}
+
+.deck {
+  position: absolute;
+  width: 100px;
+  transform: translate(-50%, -50%);
+  transition: all 1s;
+}
+
+.deck.deal {
+  top: 150% !important;
 }

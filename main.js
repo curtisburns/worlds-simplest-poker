@@ -38,7 +38,7 @@ window.onload = () => {
     startGameButton =  document.createElement('button');
     startGameButton.textContent = 'Start game';
     startGameContainer.appendChild(startGameButton);
-    startGameContainer.addEventListener('click', createInstructionsEl);
+    startGameButton.addEventListener('click', createInstructionsEl);
     setTimeout( function() {
       startGameContainer.classList.add('modalEnter');
     },100);
@@ -69,18 +69,21 @@ window.onload = () => {
 
   function hideEl(element) {
     element.classList.remove('show');
-    element.classList.add('hide');
+    setTimeout(function() {
+      element.classList.add('hide');
+    }, 1000);
   }
 
   function prepareGame() {
     currentGame = new Game(6, 2);
-    currentGame.constructDeck();
     currentGame.shuffleDeck();
     currentGame.updateDOMOptions()
     removeModal(instructionsContainer)
     showEl(scoreboard);
     showEl(options);
   }
+
+  
 
   
 
@@ -102,16 +105,21 @@ window.onload = () => {
       downArrow1.addEventListener('click', this.decreasePlayerNumber);
       upArrow2.addEventListener('click', this.increaseHandSize);
       downArrow2.addEventListener('click', this.decreaseHandSize);
+      dealCardsButton.addEventListener('click', this.dealCards);
     }
 
 
 
     constructDeck() {
+      console.log('im firing');
+      let xPos = 50;
+      let yPos = 30;
       const deck = [];
       suits.forEach(suit => {
         values.forEach(value => {
-          const inNewCard = new Card(suit, value);
+          const inNewCard = new Card(suit, value, xPos, yPos);
           deck.push(inNewCard);
+          yPos -= .05;
         });
       });
       return deck;
@@ -126,6 +134,7 @@ window.onload = () => {
         const temp = deck[i];
         deck[i] = deck[randomIndex];
         deck[randomIndex] = temp;
+        console.log('this is the deck', deck);
       }
     }
 
@@ -198,25 +207,59 @@ window.onload = () => {
 
 
     dealCards() {
-      
+      hideEl(options);
+      currentGame.createPlayers();
+      let card = 0;
+      let delay = 0; 
+      let showHandDelay = currentGame.sizeOfHand * currentGame.players.length * 100
+      for ( let i = 0; i < currentGame.sizeOfHand; i++ ) {
+        for( let j = 0; j < currentGame.players.length; j++ ) {
+          setTimeout(function() {
+            console.log(card);
+            currentGame.deck[card].DOMElement.classList.add('deal');
+            currentGame.players[j].hand.push(currentGame.deck[card]);
+            currentGame.deck[card].dealt = true;
+            console.log(j, currentGame.players[j].hand);
+            card++;
+          }, delay);
+          delay += 100;
+        }
+      }
+      currentGame.deck = currentGame.deck.filter(card => card.dealt !== true );
+      setTimeout(function(){
+        currentGame.players[0].showHand();
+        console.log(currentGame.players[0].hand);
+        console.log(currentGame.players[1].hand);
+      }, showHandDelay);
+    }
+
+    createPlayers() {
+      for ( let i = 0; i < this.numberOfPlayers; i++) {
+        const newPlayer = new Player();
+        this.players.push(newPlayer);
+      }
     }
 
   }
 
-  // Initialised at 2 players
-  // let handSizeOptions = [];
-  // let playerNumberOptions = [1, 2];
-  // let currentPlayerChoice = playerNumberOptions[1];
-  // let currentHandSizeChoice = 6;
+
 
   // This class builds the deck, dealt and totalled are intialised as false to be
   // used later
   class Card {
-    constructor(suit, value) {
+    constructor(suit, value, xPos, yPos) {
       this.suit = suit;
       this.value = value;
       this.dealt = false;
       this.totalled = false;
+      this.xPos = xPos;
+      this.yPos = yPos;
+      this.DOMElement = document.createElement('img');
+      this.DOMElement.setAttribute('src', './assets/img/back.png');
+      this.DOMElement.setAttribute('style', `left:${this.xPos}%; top:${yPos}%`);
+      this.DOMElement.setAttribute('class', 'deck');
+      game.appendChild(this.DOMElement);
+      
     }
   }
 
@@ -226,161 +269,60 @@ window.onload = () => {
       this.hand = [];
       this.points = 0;
     }
-  }
+    
+    showHand() {
+      let increment = 60/this.hand.length;
+      let newXPos = 15 + increment;
+      for ( let i = 0; i < this.hand.length; i++ ) {
+        const card = this.hand[i];
+        card.DOMElement.classList.remove('deal');
+        card.xPos = newXPos;
+        card.yPos = 80;
+        card.DOMElement.setAttribute('style', `top: ${card.yPos}%; left: ${card.xPos}%; z-index: ${i}`)
+        card.DOMElement.setAttribute('src', `./assets/img/${card.value}_${card.suit}.png`);
+        newXPos += increment;
+      }
 
+      setTimeout(() => {
+        this.orderHand();
+      }, 1500);
+    }
 
+    orderHand() {
+      let cardPositions = [];
+      let sortedHand = [];
 
+      this.hand.forEach(card => {
+        cardPositions.push(card.xPos);
+        console.log(card.xPos)
+      })
 
+      for (let i = 0; i < suits.length; i++ ) {
+        this.hand.forEach(card => {
+          if (card.suit === suits[i]) {
+            console.log(suits[i]);
+            sortedHand.push(card);
+            console.log('sorted', sortedHand);
+          }
+        });
+      };
 
-  // Initialise deck
+      sortedHand.sort(function(a,b) {
+        return a.value - b.value;
+      });
 
-  // shuffleDeck();
-  // calculateSizeOfHand();
-  // calculateNumberOfPlayers();
-  // updateDOMOptions();
+      this.hand = sortedHand;
+      this.hand.forEach((card, index) => {
+        console.log('ehyyyy', cardPositions[index])
+        card.xPos = cardPositions[index];
+        card.DOMElement.setAttribute('style',`top: ${card.yPos}%; left: ${card.xPos}%; z-index:${index}`);
+      })
+      
+      
 
-  //This constructs a deck when a game starts
-  // function constructDeck() {
-  //   suits.forEach(suit => {
-  //     values.forEach(value => {
-  //       const inNewCard = new Card(suit, value);
-  //       deck.push(inNewCard);
-  //     });
-  //   });
-  // }
-
-  // Creates and shuffles deck - fisher-yates shuffle
-  // function shuffleDeck() {
-  //   constructDeck();
-
-  //   // Must decrement in order to maximise shuffle
-  //   const deckSize = deck.length;
-  //   for ( let i = deckSize-1; i >= 0; i-- ) {
-  //     const randomIndex = Math.floor(Math.random() * deckSize);
-  //     const temp = deck[i];
-  //     deck[i] = deck[randomIndex];
-  //     deck[randomIndex] = temp;
-  //   }
-  // }
-
-  // How many cards dealt needs to be determined by number of players and vice
-  // versa
-  // function calculateSizeOfHand() {
-  //   handSizeOptions = [];
-  //   const maxHandSize = Math.floor(deck.length/currentPlayerChoice);
-  //   // Determines hand size options
-  //   for ( let i = 1; i <= maxHandSize; i++ ) {
-  //     handSizeOptions[i-1] = i;
-  //   }
-  // }
-
-  // function calculateNumberOfPlayers() {
-  //   playerNumberOptions = [];
-  //   const maxNumberOfPlayers = Math.floor(deck.length/currentHandSizeChoice);
-  //   // Determines player number options
-  //   for ( let i = 1; i <= maxNumberOfPlayers; i++ ) {
-  //     playerNumberOptions[i-1] = i;
-  //   }
-  // }
-
-  // function updateDOMOptions() {
-  //   numberOfPlayersDOM.textContent = currentPlayerChoice;
-  //   sizeOfHandDOM.textContent = currentHandSizeChoice;
-  // }
-
-
-
-
-
-
-  // function assignPlayerNumberSelect(direction) {
-  //   if (direction === 'up') {
-  //     return function increasePlayerNumber() {
-
-  //       calculateNumberOfPlayers();
-  //       calculateSizeOfHand();
-
-  //       const index = playerNumberOptions.indexOf(currentPlayerChoice) + 1;
-  //       // If the index calculated is higher than possible, send to beginning.
-  //       // Otherwise continue to increase;
-  //       currentPlayerChoice = index > playerNumberOptions.length-1 ? playerNumberOptions[0] : playerNumberOptions[index];
-
-  //       updateDOMOptions();
-  //     };
-  //   }
-  //   if (direction === 'down') {
-  //     return function decreasePlayerOption() {
-
-  //       calculateNumberOfPlayers();
-  //       calculateSizeOfHand();
-
-  //       const index = playerNumberOptions.indexOf(currentPlayerChoice) - 1;
-  //       // If the index calculated is lower than possible, send to end.
-  //       // Otherwise continue to decrease;
-  //       currentPlayerChoice = index < 0 ? playerNumberOptions[playerNumberOptions.length-1] : playerNumberOptions[index];
-
-  //       updateDOMOptions();
-  //     };
-  //   }
-  // }
-
-  // function assignHandSizeSelect(direction) {
-  //   if (direction === 'up') {
-  //     return function increasePlayerNumber() {
-
-  //       calculateSizeOfHand();
-  //       calculateNumberOfPlayers();
-
-  //       const index = handSizeOptions.indexOf(currentHandSizeChoice) + 1;
-  //       // If the index calculated is higher than possible, send to beginning.
-  //       // Otherwise continue to increase;
-  //       currentHandSizeChoice = index > handSizeOptions.length-1 ? handSizeOptions[0] : handSizeOptions[index];
-
-  //       updateDOMOptions();
-  //     };
-  //   }
-  //   if (direction === 'down') {
-  //     return function decreasePlayerOption() {
-
-  //       calculateSizeOfHand();
-  //       calculateNumberOfPlayers();
-
-  //       const index = handSizeOptions.indexOf(currentHandSizeChoice) - 1;
-  //       // If the index calculated is lower than possible, send to end.
-  //       // Otherwise continue to decrease;
-  //       currentHandSizeChoice = index < 0 ? handSizeOptions[handSizeOptions.length-1] : handSizeOptions[index];
-
-  //       updateDOMOptions();
-  //     };
-  //   }
-  // }
-
-  ////////////////// START GAME ///////////////////
-  // function dealCards() {
-  //   createPlayers();
-  //   let card = 0;
-  //   for ( let i = 0; i < currentHandSizeChoice; i++ ) {
-  //     for( let j = 0; j < players.length; j++ ) {
-  //       players[j].hand.push(deck[card]);
-  //       deck[card].dealt = true;
-  //       card++;
-  //     }
-  //   }
-  //   console.log('players', players);
-  //   deck = deck.filter(card => card.dealt !== true );
-  //   console.log('deck', deck);
-  // }
-
-  // function createPlayers() {
-  //   players = [];
-  //   console.log(currentPlayerChoice);
-  //   for ( let i = 0; i < currentPlayerChoice; i++) {
-  //     const newPlayer = new Player();
-  //     players.push(newPlayer);
-  //   }
-  // }
-
-  // dealCards();
+     
+    }
+  };
 
   // function determineWinner() {
   //   const result = {
