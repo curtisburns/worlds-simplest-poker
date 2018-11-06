@@ -16,8 +16,10 @@ window.onload = () => {
   const dealCardsButton = document.getElementsByClassName('deal-cards')[0];
   const game = document.getElementsByClassName('game')[0];
   const scoreboard = document.getElementsByClassName('scoreboard')[0];
+  const scoreboardList = document.getElementsByClassName('scoreboard-list')[0];
   const options = document.getElementsByClassName('options')[0];
   let startGameContainer, startGameButton, instructionsContainer, instructionsButton;
+
 
   function removeModal(element) {
     element.classList.remove('modalEnter');
@@ -223,10 +225,10 @@ window.onload = () => {
       }
       currentGame.deck = currentGame.deck.filter(card => card.dealt !== true );
       setTimeout(function(){
-        currentGame.players[0].showHand('player1');
+        currentGame.players[0].showHand(0);
         // orders the other players hands
         for (let i = 1; i < currentGame.players.length; i++ ) {
-          currentGame.players[i].orderHand();
+          currentGame.players[i].orderHand(i);
         }
       }, showHandDelay);
     }
@@ -269,7 +271,7 @@ window.onload = () => {
     }
     
     showHand(player) {
-      if (player === 'player1') {
+      if (player === 0) {
         let increment = 60/this.hand.length;
         let newXPos = 15 + increment;
         for ( let i = 0; i < this.hand.length; i++ ) {
@@ -283,14 +285,14 @@ window.onload = () => {
         };
   
         setTimeout(() => {
-          this.orderHand();
+          this.orderHand(player);
         }, 1500);
       } else {
         this.orderHand();
       }
     }
 
-    orderHand() {
+    orderHand(player) {
       let cardPositions = [];
       let sortedHand = [];
 
@@ -315,17 +317,16 @@ window.onload = () => {
         card.xPos = cardPositions[index];
         card.DOMElement.setAttribute('style',`top: ${card.yPos}%; left: ${card.xPos}%; z-index:${index}`);
       });
-      setTimeout(() =>  this.totalHand(), 500);     
+      setTimeout(() =>  this.totalHand(player), 500);     
     }
 
-    totalHand() {
+    totalHand(player) {
       let scoreTotal = 0;
       let count;
       let delay = 50;
-      const score = document.createElement('p');
+      const score = document.createElement('li');
       score.classList.add('score');
-      score.textContent = `${scoreTotal}`;
-      game.appendChild(score);
+      scoreboardList.appendChild(score);
       this.hand.forEach((card, index, hand) => {
         setTimeout(() => {
           console.log(card.totalled);
@@ -370,7 +371,10 @@ window.onload = () => {
               card.totalled = true;
               // console.log('just add me to the total and carry on');
             }
-            score.textContent = `${scoreTotal}`;
+            if (player === 0)
+            score.textContent = `Your score: ${scoreTotal}`;
+          } else {
+            score.textContent = `Player ${player+1} score: ${scoreTotal}`;
           }
         }, delay);
         delay += 500;
