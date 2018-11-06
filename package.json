@@ -2,8 +2,9 @@
   "name": "worlds-simplest-poker",
   "version": "1.0.0",
   "description": "This is the worlds simplest poker game!",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "start": "echo \"Error: no start specified\" && exit 1",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
