@@ -4,7 +4,6 @@
   "description": "This is the worlds simplest poker game!",
   "main": "main.js",
   "scripts": {
-    "start": "echo \"Error: no start specified\" && exit 1",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/curtisburns/worlds-simplest-poker/issues"
   },
-  "homepage": "https://github.com/curtisburns/worlds-simplest-poker#readme"
+  "homepage": "https://github.com/curtisburns/worlds-simplest-poker#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
 }
