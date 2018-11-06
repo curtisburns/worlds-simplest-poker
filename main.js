@@ -111,7 +111,6 @@ window.onload = () => {
 
 
     constructDeck() {
-      console.log('im firing');
       let xPos = 50;
       let yPos = 30;
       const deck = [];
@@ -134,7 +133,6 @@ window.onload = () => {
         const temp = deck[i];
         deck[i] = deck[randomIndex];
         deck[randomIndex] = temp;
-        console.log('this is the deck', deck);
       }
     }
 
@@ -215,11 +213,9 @@ window.onload = () => {
       for ( let i = 0; i < currentGame.sizeOfHand; i++ ) {
         for( let j = 0; j < currentGame.players.length; j++ ) {
           setTimeout(function() {
-            console.log(card);
             currentGame.deck[card].DOMElement.classList.add('deal');
             currentGame.players[j].hand.push(currentGame.deck[card]);
             currentGame.deck[card].dealt = true;
-            console.log(j, currentGame.players[j].hand);
             card++;
           }, delay);
           delay += 100;
@@ -227,9 +223,11 @@ window.onload = () => {
       }
       currentGame.deck = currentGame.deck.filter(card => card.dealt !== true );
       setTimeout(function(){
-        currentGame.players[0].showHand();
-        console.log(currentGame.players[0].hand);
-        console.log(currentGame.players[1].hand);
+        currentGame.players[0].showHand('player1');
+        // orders the other players hands
+        for (let i = 1; i < currentGame.players.length; i++ ) {
+          currentGame.players[i].orderHand();
+        }
       }, showHandDelay);
     }
 
@@ -270,22 +268,26 @@ window.onload = () => {
       this.points = 0;
     }
     
-    showHand() {
-      let increment = 60/this.hand.length;
-      let newXPos = 15 + increment;
-      for ( let i = 0; i < this.hand.length; i++ ) {
-        const card = this.hand[i];
-        card.DOMElement.classList.remove('deal');
-        card.xPos = newXPos;
-        card.yPos = 80;
-        card.DOMElement.setAttribute('style', `top: ${card.yPos}%; left: ${card.xPos}%; z-index: ${i}`)
-        card.DOMElement.setAttribute('src', `./assets/img/${card.value}_${card.suit}.png`);
-        newXPos += increment;
-      }
-
-      setTimeout(() => {
+    showHand(player) {
+      if (player === 'player1') {
+        let increment = 60/this.hand.length;
+        let newXPos = 15 + increment;
+        for ( let i = 0; i < this.hand.length; i++ ) {
+          const card = this.hand[i];
+          card.DOMElement.classList.remove('deal');
+          card.xPos = newXPos;
+          card.yPos = 80;
+          card.DOMElement.setAttribute('style', `top: ${card.yPos}%; left: ${card.xPos}%; z-index: ${i}`)
+          card.DOMElement.setAttribute('src', `./assets/img/${card.value}_${card.suit}.png`);
+          newXPos += increment;
+        };
+  
+        setTimeout(() => {
+          this.orderHand();
+        }, 1500);
+      } else {
         this.orderHand();
-      }, 1500);
+      }
     }
 
     orderHand() {
@@ -294,33 +296,86 @@ window.onload = () => {
 
       this.hand.forEach(card => {
         cardPositions.push(card.xPos);
-        console.log(card.xPos)
-      })
+      });
 
       for (let i = 0; i < suits.length; i++ ) {
         this.hand.forEach(card => {
           if (card.suit === suits[i]) {
-            console.log(suits[i]);
             sortedHand.push(card);
-            console.log('sorted', sortedHand);
           }
         });
       };
 
       sortedHand.sort(function(a,b) {
-        return a.value - b.value;
+        return b.value - a.value;
       });
 
       this.hand = sortedHand;
       this.hand.forEach((card, index) => {
-        console.log('ehyyyy', cardPositions[index])
         card.xPos = cardPositions[index];
         card.DOMElement.setAttribute('style',`top: ${card.yPos}%; left: ${card.xPos}%; z-index:${index}`);
-      })
-      
-      
+      });
+      setTimeout(() =>  this.totalHand(), 500);     
+    }
 
-     
+    totalHand() {
+      let scoreTotal = 0;
+      let count;
+      let delay = 50;
+      const score = document.createElement('p');
+      score.classList.add('score');
+      score.textContent = `${scoreTotal}`;
+      game.appendChild(score);
+      this.hand.forEach((card, index, hand) => {
+        setTimeout(() => {
+          console.log(card.totalled);
+          if (card.totalled !== true) {
+            console.log('test', hand, index)
+            switch (card.value) {
+              case hand[index+3] && hand[index+3].value:
+              // console.log('im four of a kind');
+              count = 3;
+                while (count >= 0) {
+                  hand[index+count].totalled = true;
+                  hand[index+count].DOMElement.setAttribute('style',`top: ${hand[index+count].yPos - 10}%; left: ${hand[index+count].xPos}%; z-index:${index+count}`);
+                  count--;
+                 
+                }
+              scoreTotal += (card.value * 4) + 30
+              
+              break;
+              case hand[index+2] && hand[index+2].value:
+              count = 2;
+              while (count >= 0) {
+                hand[index+count].totalled = true;
+                hand[index+count].DOMElement.setAttribute('style',`top: ${hand[index+count].yPos - 10}%; left: ${hand[index+count].xPos}%; z-index:${index+count}`);
+                count--;
+              }
+              scoreTotal += (card.value * 3) + 20
+              // console.log('im three of a kind');
+              break;
+              case hand[index+1] && hand[index+1].value:
+              count = 1;
+              while (count >= 0) {
+                hand[index+count].totalled = true;
+                hand[index+count].DOMElement.setAttribute('style',`top: ${hand[index+count].yPos - 10}%; left: ${hand[index+count].xPos}%; z-index:${index+count}`);
+                count--;
+              }
+              scoreTotal += (card.value * 2) + 10
+              // console.log('im a pair');
+              break;
+              default:
+              scoreTotal += card.value;
+              card.DOMElement.setAttribute('style',`top: ${card.yPos - 10}%; left: ${card.xPos}%; z-index:${index}`);
+              card.totalled = true;
+              // console.log('just add me to the total and carry on');
+            }
+            score.textContent = `${scoreTotal}`;
+          }
+        }, delay);
+        delay += 500;
+        // card.DOMElement
+      })  
     }
   };
 
