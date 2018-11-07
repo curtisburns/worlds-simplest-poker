@@ -39,9 +39,5 @@ of code that aren’t easily readable should also be commented.
 on our machines. If you haven’t used a Mac to write your code, we will take that into
 account if we have any issues.
 
-## To run this code locally, in your CLI run:
-
-```
-npm run start:client
-```
+## To run this code locally, simply open the html file in you browser.
   
