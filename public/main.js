@@ -479,10 +479,10 @@ window.onload = () => {
       const updateCountAndDOM = (hand, index, score, count) => {
         if (player === 0) {
             hand[index+count].DOMElement.setAttribute('style',`top: ${hand[index+count].yPos - 10}%; left: ${hand[index+count].xPos}%; z-index:${index+count}`);
-            this.scoreElement.textContent = `You: ${score}`;
+            this.scoreElement.innerHTML = `You: <span style="float: right">${this.score}</span>`;
         } else {
           // No need to reposition for other players as they are not showing there hands;
-          this.scoreElement.textContent = `Player ${player + 1}: ${score}`;
+          this.scoreElement.innerHTML = `Player ${player + 1}: <span style="float: right">${this.score}</span>`;
         }
         // Decrement count for while loop (in event of pairs etc.) and assign totalled as true to avoid duplicate calc;
         this.count--;
@@ -522,9 +522,9 @@ window.onload = () => {
               this.score += card.value;
               card.DOMElement.setAttribute('style',`top: ${card.yPos - 10}%; left: ${card.xPos}%; z-index:${index}`);
               if (player === 0 ) {
-                  this.scoreElement.textContent = `You: ${this.score}`;
+                  this.scoreElement.innerHTML = `You: <span style="float: right">${this.score}</span>`;
               } else {
-                this.scoreElement.textContent = `Player ${player + 1}: ${this.score}`;
+                this.scoreElement.innerHTML = `Player ${player + 1}: <span style="float: right">${this.score}</span>`;
               }
               card.totalled = true;
           }
@@ -539,10 +539,11 @@ window.onload = () => {
       } 
     }
 
-    
+
   };
 
   // Lets begin the game!
   createStartGameEl();
 
 };
+
