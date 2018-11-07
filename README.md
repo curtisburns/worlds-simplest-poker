@@ -41,5 +41,7 @@ account if we have any issues.
 
 ## To run this code locally, in your CLI run:
 
-'''npm run start:client
+```
+npm run start:client
+```
   
