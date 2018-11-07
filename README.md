@@ -2,7 +2,7 @@
 This is the worlds simplest poker game!
   
 <p align="center">
-  <img width="700" height="350" alt="Gameplay" src="https://media.giphy.com/media/3tK6U1THmeeR2gtAQW/giphy.gif">
+  <img width="600" height="350" alt="Gameplay" src="https://media.giphy.com/media/3tK6U1THmeeR2gtAQW/giphy.gif">
 </p>
 
 [Check out the link for the game](https://pixie-labs-code-test.herokuapp.com/)
