@@ -90,6 +90,7 @@ html, .game {
   text-align: center;
   border-radius: 10px;
   transition: all 1s;
+  z-index: 999;
 }
 
 .hide {
