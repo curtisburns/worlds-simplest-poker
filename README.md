@@ -1,5 +1,9 @@
 # worlds-simplest-poker
 This is the worlds simplest poker game!
+  
+<p align="center">
+  <img width="800" height="550" alt="Gameplay" src="https://media.giphy.com/media/3tK6U1THmeeR2gtAQW/giphy.gif">
+</p>
 
 [Check out the link for the game](https://pixie-labs-code-test.herokuapp.com/)
 
